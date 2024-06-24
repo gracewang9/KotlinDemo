@@ -1,4 +1,4 @@
-class Kotlin {
+class KotlinClass {
 
     fun sol() {
         /**
@@ -10,5 +10,6 @@ class Kotlin {
         //空安全
         val dub:String?
         val d:String?=null
+
     }
 }
