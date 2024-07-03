@@ -1,4 +1,4 @@
-package _kotlin.calculator
+package calculator
 
 enum class Operation (val value:String){
     ADD("+"),

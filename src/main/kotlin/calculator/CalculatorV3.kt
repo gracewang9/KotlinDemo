@@ -1,4 +1,4 @@
-package _kotlin.calculator
+package calculator
 
 class CalculatorV3 {
 
