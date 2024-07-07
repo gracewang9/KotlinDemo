@@ -1,3 +1,6 @@
+/**
+ * 基础练习
+ */
 class KotlinClass {
 
     fun info() {
@@ -177,6 +180,7 @@ class KotlinClass {
 }
 
 fun main() {
-
+val kotlinClass=KotlinClass()
+    kotlinClass.info()
 }
 
