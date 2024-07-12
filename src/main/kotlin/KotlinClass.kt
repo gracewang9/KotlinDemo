@@ -179,8 +179,83 @@ class KotlinClass {
 
 }
 
-fun main() {
-val kotlinClass=KotlinClass()
-    kotlinClass.info()
+/**
+ * Any与Any? ,Object区别
+ * Kotlin中Any?是Any的父类
+ * Kotlin中的Any?大致对应Java中的Object
+ */
+fun testAny() {
+//    val any:Any="string"
+//    val any2:Any?=any
+//    val any3:Any=any2
+//    val any4:String=any2
+//    val any5:String?=any
+
 }
+
+/**
+ * Unit
+ * Nothing
+ */
+
+
+fun main() {
+    val kotlinClass = KotlinClass()
+    kotlinClass.info()
+
+//    saveSomething(null)
+//    val model = Model3()
+//    model.data//.add("World")
+}
+
+//数据类
+data class Person4(val name: String?, val age: Int?)
+
+//用copy修改属性
+fun changUserName(person4: Person4, newName: String): Person4 = person4.copy(name = newName)
+
+/**
+ * 集合的不变性
+ */
+class Model3 {
+    //用了val修饰，外部还是可以修改
+//    val data: MutableList<String> = mutableListOf()
+    //改造集合在外部不能被修改
+    //属性的直接委托
+//    private val _data: MutableList<String> = mutableListOf()
+//    val data: List<String> by ::_data
+
+    //借助get()方法
+//    val date:List<String> get() = _data
+//    private val _data:MutableList<String> = mutableListOf()
+
+
+    private val _data: MutableList<String> = mutableListOf()
+    //使用方法  用.toList()转型
+    fun getData(): List<String> = _data.toList()
+
+    private fun load() {
+        _data.add("Hello")
+    }
+}
+//为泛型T添加上界Any
+fun <T :Any> saveSomething(data:T){
+    val set= sortedSetOf<T>()
+    set.add(data)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
