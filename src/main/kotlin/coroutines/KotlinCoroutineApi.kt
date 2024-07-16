@@ -1,8 +1,11 @@
 package coroutines
 
+import User
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.runBlocking
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.math.log
 import kotlin.random.Random
@@ -269,21 +272,110 @@ fun logX(any: Any?) {
 //    println(results)
 //}
 
-fun main() = runBlocking {
-    val job = launch {
-        logX("First coroutine start!")
-        delay(10000L)
-        logX("First coroutine end!")
-    }
-    job.join()
-    val job2=launch {
-        logX("Second coroutine start!")
-        delay(1000L)
-        logX("Second coroutine end!")
-    }
-    job2.join()
-    logX("Process end!")
-}
+//fun main() = runBlocking {
+//    val job = launch {
+//        logX("First coroutine start!")
+//        delay(10000L)
+//        logX("First coroutine end!")
+//    }
+//    job.join()
+//    val job2=launch {
+//        logX("Second coroutine start!")
+//        delay(1000L)
+//        logX("Second coroutine end!")
+//    }
+//    job2.join()
+//    logX("Process end!")
+//}
+
+
+/**
+ * 协程的CoroutineContext 上下文，用来切换线程池。
+ * Dispatchers.Main 在UI平台才有意义
+ * Dispatchers.Unconfined 当前协程可能运行在任意线程之上
+ * Dispatchers.Default 用于CPU密集型任务的线程池，最小限制2
+ * Dispatchers.IO 用于IO密集型任务的线程池。它内部的线程数量一般会更多些。
+ * 具体线程的数量可以通过参数来配置：kotlinx.coroutine.io.parallelism
+ */
+
+//fun main() = runBlocking(Dispatchers.IO) {
+//    val user= getUserInfo()
+//    logX(user)
+//}
+/**
+ * 自定义协程
+ */
+
+val mySingleDispatcher = Executors.newSingleThreadExecutor {
+    Thread(it, "MySingleThread").apply { isDaemon = true }
+}.asCoroutineDispatcher()
+
+//fun main() = runBlocking (mySingleDispatcher){
+//    val user= getUserInfo()
+//    logX(user)
+//}
+//fun ExecutorService.asCoroutineDispatcher():ExecutorCoroutineDispatcher=ExecutorCoroutineDispatcherI
+
+
+/**
+ * CoroutineScope最大的作用
+ */
+
+//fun main() = runBlocking {
+//    val scope = CoroutineScope(Job())
+//    scope.launch {
+//        logX("First start!")
+//        delay(1000L)
+//        logX("First end!")
+//    }
+//    scope.launch {
+//        logX("Second start!")
+//        delay(1000L)
+//        logX("Second end!")
+//    }
+//    scope.launch {
+//        logX("Third start!")
+//        delay(1000L)
+//        logX("Third end!")
+//    }
+//
+//    delay(500L)
+//    scope.cancel()
+//    delay(1000L)
+//}
+
+//@OptIn(ExperimentalStdlibApi::class)
+//fun main() = runBlocking {
+//    val scope = CoroutineScope(Job() + mySingleDispatcher)
+//    scope.launch {
+//        logX(coroutineContext[CoroutineDispatcher] = mySingleDispatcher)
+//    delay(1000L)
+//        logX("First end!")
+//    }
+//    delay(500L)
+//    scope.cancel()
+//    delay(10000L)
+//}
+
+
+/**
+ * 关键字operator 表示支持操作符重载
+ */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
