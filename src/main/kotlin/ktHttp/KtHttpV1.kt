@@ -48,7 +48,7 @@ object KtHttpV1 {
     private val gson: Gson by lazy { Gson() }
 
     var baseUrl = "https://baseurl.com"
-    inline fun <reified T> create(): T {
+    inline fun <reified T> create(java: Class<ApiService>): T {
         return Proxy.newProxyInstance(
             T::class.java.classLoader,
             arrayOf(T::class.java)
@@ -87,8 +87,14 @@ interface GitHubService {
     fun search(@Field("id") id: String): User
 }
 
-
-
+/**
+ * 同步代码
+ */
+fun main() {
+    val api:ApiService=KtHttpV1.create(ApiService::class.java)
+    val data:RepoList=api.repos(lang = "Kotlin", since = "weekly")
+    println(data)
+}
 
 
 
