@@ -5,6 +5,9 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.selects.select
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import java.util.concurrent.Executors
 
 /**
  * flow{} 是一个高阶函数，创建一个新的Flow在它的Lambda中可以使用emit()往下游发送数据。
@@ -299,55 +302,112 @@ import kotlinx.coroutines.selects.select
 /**
  * select 配合channel
  */
-fun main() = runBlocking {
-    val startTime = System.currentTimeMillis()
-    val channel1 = produce {
-        send("1")
-        delay(200L)
-        send("2")
-        delay(200L)
-        send("3")
-        delay(150L)
-    }
-    val channel2 = produce {
-        delay(100L)
-        send("a")
-        delay(200L)
-        send("b")
-        delay(200L)
-        send("c")
-    }
-
-    suspend fun selectChannel(channel1: ReceiveChannel<String>, channel2: ReceiveChannel<String>): String =
-        select<String> {
-            channel1.onReceiveCatching {
-                it.getOrNull() ?: "channel1 is closed!"
-            }
-            channel2.onReceiveCatching { it.getOrNull() ?: "channel2 is closed!" }
-        }
-    repeat(10) {
-        println(selectChannel(channel1, channel2))
-    }
-    channel1.cancel()
-    channel2.cancel()
-    println("")
-}
+//fun main() = runBlocking {
+//    val startTime = System.currentTimeMillis()
+//    val channel1 = produce {
+//        send("1")
+//        delay(200L)
+//        send("2")
+//        delay(200L)
+//        send("3")
+//        delay(150L)
+//    }
+//    val channel2 = produce {
+//        delay(100L)
+//        send("a")
+//        delay(200L)
+//        send("b")
+//        delay(200L)
+//        send("c")
+//    }
+//
+//    suspend fun selectChannel(channel1: ReceiveChannel<String>, channel2: ReceiveChannel<String>): String =
+//        select<String> {
+//            channel1.onReceiveCatching {
+//                it.getOrNull() ?: "channel1 is closed!"
+//            }
+//            channel2.onReceiveCatching { it.getOrNull() ?: "channel2 is closed!" }
+//        }
+//    repeat(10) {
+//        println(selectChannel(channel1, channel2))
+//    }
+//    channel1.cancel()
+//    channel2.cancel()
+//    println("")
+//}
 
 data class Product(
     val id: String,
     val price: Double,
     val isCache: Boolean = false
 )
+/**
+ * 单线程并发
+ */
+//fun main() = runBlocking {
+//    val mySingleDispatcher = Executors.newSingleThreadExecutor {
+//        Thread(it, "MySingleThread").apply { isDaemon = true }
+//    }.asCoroutineDispatcher()
+//    var i = 0
+//    val jobs = mutableListOf<Job>()
+//    repeat(10) {
+//        val job = launch(mySingleDispatcher) {
+//            repeat(10000) {
+//                i++
+//            }
+//        }
+//        jobs.add(job)
+//    }
+//    jobs.joinAll()
+//    println("i = $i")
+//}
 
 
+/**
+ *  Mutex 锁 支持挂起和恢复
+ *  mutex.lock() 和 mutex.unlock()实现多线程同步。
+ *
+ */
+
+//fun main() = runBlocking {
+//    val mutex=Mutex()
+//    var j=0
+//    val jobs= mutableListOf<Job>()
+//    repeat(10){
+//        val job=launch(Dispatchers.Default) {
+//            repeat(10000){
+//                //应这样写
+//                mutex.withLock {
+//                    j++
+//                }
+////                这样写不安全
+////                mutex.lock()
+////                j++
+////                mutex.unlock()
+//            }
+//        }
+//        jobs.add(job)
+//    }
+//    jobs.joinAll()
+//    println("j = $j")
+//}
 
 
-
-
-
-
-
-
+/**
+ * 函数式思维
+ */
+fun main() = runBlocking {
+    val result=(1..10).map {
+        async (Dispatchers.Default){
+            var i=0
+            repeat(1000){
+                i++
+            }
+            return@async i
+        }
+    }.awaitAll().sum()
+    println("result = $result")
+}
 
 
 
