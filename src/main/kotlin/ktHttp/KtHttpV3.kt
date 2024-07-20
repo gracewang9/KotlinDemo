@@ -28,7 +28,7 @@ interface Callback<T : Any> {
     fun onFail(throwable: Throwable)
 }
 
-interface ApiServiceV3 {
+ interface ApiServiceV3 {
     @GET("/repo")
     fun repos(
         @Field("lang") lang: String,
